@@ -1,0 +1,17 @@
+# Python files
+*.pyc
+__pycache__/
+
+# Virtual environment
+venv/
+.env/
+.venv/
+Pipfile.lock
+
+# Django-related files
+db.sqlite3
+*.log
+
+# Static and media files
+staticfiles/
+media/
