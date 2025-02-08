@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Create Task</h2>
+<form method="POST" class="form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Create Task</button>
+</form>
+
+<!-- Add Flatpickr Initialization Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        flatpickr("input[name='due_date']", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+        });
+    });
+</script>
+{% endblock %}

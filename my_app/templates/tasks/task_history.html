@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Task History for {{ task.title }}</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Action</th>
+            <th>Performed By</th>
+            <th>Timestamp</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in history %}
+            <tr>
+                <td>{{ entry.action }}</td>
+                <td>{{ entry.performed_by.username }}</td>
+                <td>{{ entry.timestamp }}</td>
+                <td>{{ entry.details }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'task_detail' task.id %}" class="btn btn-secondary">Back to Task</a>
+{% endblock %}
