@@ -26,6 +26,17 @@ class Job(models.Model):
     def __str__(self):
         return self.title
 
+    def update_status(self, new_status, user):
+        """Update status and create a history record."""
+        self.status = new_status
+        self.save()
+        JobHistory.objects.create(
+            job=self,
+            action=f"Status changed to {new_status}",
+            performed_by=user,
+            details=f"Task status updated to {new_status} by {user.username}."
+        )
+
 
 class Notes(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='notes')
