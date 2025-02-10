@@ -1,29 +1,36 @@
 {% extends 'base.html' %}
 
+{% block title %}Add Note{% endblock %}
+
 {% block content %}
-<h2 class="mb-4 text-center">Add/Edit Note</h2>
-    <div class="row justify-content-center">
-	<div class="col-md-8 col-lg-6">
-        <form method="POST" action="{% url 'add_note' task.id %}" class="form card p-4 shadow-sm">
+<h2 class="my-4 text-center">Add/Edit Note</h2>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <form method="POST" class="form card p-4 shadow-sm">
             {% csrf_token %}
-            {{ form.non_field_errors }}
-            {% for field in form %}
-                <div class="mb-3">
-                    <div class="mb-3">
-                        {{ field.label_tag }} 
-                        {{ field }}
-                        {% if field.help_text %}
-                            <small class="form-text text-muted">{{ field.help_text }}</small>
-                        {% endif %}
-                        {{ field.errors }}
-                    </div>
+
+            <!-- Title Field -->
+            <div class="mb-4">
+                <label for="id_title" class="form-label fw-semibold">Note Title</label>
+                <div class="input-group">
+                    {{ form.title }}
                 </div>
-            {% endfor %}
-            <div class="col-md-12">
-                <button type="submit" class="btn btn-success w-100 mt-3">Save Note</button>
+            </div>
+
+            <!-- Description Field -->
+            <div class="mb-4">
+                <label for="id_description" class="form-label fw-semibold">Note Description</label>
+                <div class="input-group">
+                    {{ form.description }}
+                </div>
+            </div>
+
+            <!-- Submit and Cancel Buttons -->
+            <div class="d-grid gap-3">
+                <button type="submit" class="btn btn-primary">Save Note</button>
+                <a href="{% url 'task_detail' task.id %}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
 </div>
 {% endblock %}
-
