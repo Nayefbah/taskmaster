@@ -1,20 +1,23 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
-
-STATUS=(
-('P', 'pending'),('I','In Progress'),('C','Completed')
+STATUS = (
+    ('Pending', 'Pending'),
+    ('In Progress', 'In Progress'),
+    ('Completed', 'Completed')
 )
 
-ACTION=(('Cr', 'Created'),
-        ('Up', 'Updated'),
-        ('Tr', 'Transferred'),
-        ('Co', 'Completed'),)
+ACTION = (
+    ('Created', 'Created'),
+    ('Updated', 'Updated'),
+    ('Transferred', 'Transferred'),
+    ('Completed', 'Completed')
+)
+
 class Job(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
-    status = models.CharField(max_length=1, choices=STATUS,default=STATUS[0][0])
+    status = models.CharField(max_length=15, choices=STATUS, default='Pending')
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_jobs')
     assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='assigned_jobs')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -25,7 +28,7 @@ class Job(models.Model):
 
 
 class Notes(models.Model):
-    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='notes')
     title = models.CharField(max_length=255)
     description = models.TextField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -37,11 +40,11 @@ class Notes(models.Model):
 
 
 class JobHistory(models.Model):
-    job = models.ForeignKey(Job, on_delete=models.CASCADE)
-    action = models.CharField(max_length=2, choices=ACTION,default=ACTION[0][0])
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='history')
+    action = models.CharField(max_length=20, choices=ACTION, default='Created')
     performed_by = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
-    details = models.TextField(blank=True, null=True)  # Optional details about the action
+    details = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.job.title} - {self.action} by {self.performed_by.username}"

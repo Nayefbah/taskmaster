@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Complete Task</h2>
+<p>Are you sure you want to mark this task as completed?</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">Complete Task</button>
+    <a href="{% url 'task_detail' task.id %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

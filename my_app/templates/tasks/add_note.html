@@ -1,11 +1,29 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Add Note to Task: {{ task.title }}</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Add Note</button>
-</form>
-<a href="{% url 'task_detail' task.id %}" class="btn btn-secondary">Back to Task</a>
+<h2 class="mb-4 text-center">Add/Edit Note</h2>
+    <div class="row justify-content-center">
+	<div class="col-md-8 col-lg-6">
+        <form method="POST" action="{% url 'add_note' task.id %}" class="form card p-4 shadow-sm">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                <div class="mb-3">
+                    <div class="mb-3">
+                        {{ field.label_tag }} 
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {{ field.errors }}
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-success w-100 mt-3">Save Note</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
+

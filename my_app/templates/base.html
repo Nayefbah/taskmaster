@@ -5,10 +5,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}TaskMaster{% endblock %}</title>
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <!-- Custom CSS for Button Hover Effects -->
+    <style>
+        /* Common button styles */
+        .btn-custom {
+            background-color: #6c757d; /* Gray background */
+            color: white;             /* White text */
+            border: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Login button hover effect */
+        .btn-login:hover {
+            background-color: #007bff; /* Blue background on hover */
+        }
+
+        /* Logout button hover effect */
+        .btn-logout:hover {
+            background-color: #dc3545; /* Red (danger) background on hover */
+        }
+    </style>
 </head>
 <body>
     <!-- Header Navigation -->
@@ -27,9 +50,23 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'create_task' %}">Create Task</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'admin:index' %}">Admin</a>
-                        </li>
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <span class="nav-link">Hello, {{ user.username }}!</span>
+                            </li>
+                            <li class="nav-item">
+                                <!-- Logout button with red hover effect -->
+                                <form method="POST" action="{% url 'logout' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-custom btn-logout nav-link"><i class="bi bi-box-arrow-left"></i></button>
+                                </form>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <!-- Login button with blue hover effect -->
+                                <a class="btn btn-custom btn-login nav-link" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i></a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -61,5 +98,8 @@
 
     <!-- Bootstrap JS -->
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </body>
 </html>

@@ -1,17 +1,72 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ task.title }}</h1>
-<p><strong>Description:</strong> {{ task.description }}</p>
-<p><strong>Status:</strong> {{ task.status }}</p>
-<p><strong>Due Date:</strong> {{ task.due_date }}</p>
+<h2>Task Details</h2>
 
-<h2>Notes</h2>
-<ul>
-    {% for note in notes %}
-        <li><strong>{{ note.title }}</strong>: {{ note.description }}</li>
-    {% endfor %}
-</ul>
-<a href="{% url 'add_note' task.id %}" class="btn btn-success">Add Note</a>
-<a href="{% url 'task_list' %}" class="btn btn-secondary">Back to Task List</a>
+{% if task.status != 'Completed' %}
+    <div class="mb-4">
+        {% if user.is_superuser %}
+            <a href="{% url 'edit_task' task.id %}" class="btn btn-success"><i class="bi bi-pencil-square"></i></a>
+            <a href="{% url 'task_history' task.id %}" class="btn btn-primary me-2"><i class="bi bi-clock-history"></i></a>
+        {% endif %}
+        <a href="{% url 'transfer_task' task.id %}" class="btn btn-warning text-white me-2"><i class="bi bi-send-check"></i></a>
+        <a href="{% url 'add_note' task.id %}" class="btn btn-info me-2"><i class="bi bi-journal-plus"></i></a>
+        <a href="{% url 'task_list' %}" class="btn btn-secondary"><i class="bi bi-list-task"></i></a>
+    </div>
+{% else %}
+    <div class="alert alert-success mb-4">
+        <strong>This task has been completed. No further actions are allowed.</strong>
+    </div>
+    <a href="{% url 'task_list' %}" class="btn btn-secondary"><i class="bi bi-list-task"></i></a>
+    {% if user.is_superuser %}
+    <a href="{% url 'task_history' task.id %}" class="btn btn-primary me-2"><i class="bi bi-clock-history"></i></a>
+    {% endif %}
+{% endif %}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">{{ task.title }}</h5>
+        <p class="card-text"><strong>Description:</strong> {{ task.description }}</p>
+        <p class="card-text"><strong>Status:</strong> {{ task.get_status_display }}</p>
+        <p class="card-text"><strong>Due Date:</strong> {{ task.due_date }}</p>
+        <p class="card-text">
+            <strong>Assigned To:</strong> 
+            {% if task.assigned_to %}
+                {{ task.assigned_to.username }}
+            {% else %}
+                Unassigned
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+<h3 class="mb-3">Notes</h3>
+
+{% if notes %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Written By</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for note in notes %}
+                    <tr>
+                        <td>{{ note.title }}</td>
+                        <td>{{ note.description }}</td>
+                        <td>{{ note.created_by.username }}</td>
+                        <td>{{ note.created_at|date:"Y-m-d H:i:s" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">No notes available.</div>
+{% endif %}
+
 {% endblock %}
