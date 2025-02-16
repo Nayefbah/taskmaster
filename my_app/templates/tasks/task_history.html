@@ -1,26 +1,48 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Task History for {{ task.title }}</h1>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Action</th>
-            <th>Performed By</th>
-            <th>Timestamp</th>
-            <th>Details</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for entry in history %}
-            <tr>
-                <td>{{ entry.action }}</td>
-                <td>{{ entry.performed_by.username }}</td>
-                <td>{{ entry.timestamp }}</td>
-                <td>{{ entry.details }}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<a href="{% url 'task_detail' task.id %}" class="btn btn-secondary">Back to Task</a>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Task History for <strong>{{ task.title }}</strong></h2>
+
+    {% if history %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Action</th>
+                        <th>Performed By</th>
+                        <th>Timestamp</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in history %}
+                        <tr>
+                            <td><strong>{{ entry.action }}</strong></td>
+                            <td>{{ entry.performed_by.username }}</td>
+                            <td>{{ entry.timestamp|date:"d-M-Y H:i" }}</td>
+                            <td>
+                                {% if entry.details %}
+                                    {{ entry.details }}
+                                {% else %}
+                                    <span class="text-muted">No details provided</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            No history records available for this task.
+        </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{% url 'task_detail' task.id %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Task
+        </a>
+    </div>
+</div>
 {% endblock %}

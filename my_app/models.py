@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 STATUS = (
     ('Pending', 'Pending'),
@@ -59,3 +60,19 @@ class JobHistory(models.Model):
 
     def __str__(self):
         return f"{self.job.title} - {self.action} by {self.performed_by.username}"
+    
+
+class Attachment(models.Model):
+    task = models.ForeignKey('Job', on_delete=models.CASCADE, null=True, blank=True, related_name='attachments')
+    note = models.ForeignKey('Notes', on_delete=models.CASCADE, null=True, blank=True, related_name='attachments')
+    file = models.FileField(upload_to='static/attachments/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def clean(self):
+        if not self.task and not self.note:
+            raise ValidationError("Attachment must be related to either a task or a note.")
+        if self.task and self.note:
+            raise ValidationError("Attachment cannot be related to both a task and a note.")
+
+    def __str__(self):
+        return f"Attachment for {self.task or self.note}"

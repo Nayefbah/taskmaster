@@ -4,40 +4,19 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}TaskMaster{% endblock %}</title>
+    <title>{% block title %}{% endblock %}</title>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    
-    <!-- Flatpickr CSS -->
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-    <!-- Custom CSS for Button Hover Effects -->
-    <style>
-        /* Common button styles */
-        .btn-custom {
-            background-color: #6c757d; /* Gray background */
-            color: white;             /* White text */
-            border: none;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* Login button hover effect */
-        .btn-login:hover {
-            background-color: #007bff; /* Blue background on hover */
-        }
-
-        /* Logout button hover effect */
-        .btn-logout:hover {
-            background-color: #dc3545; /* Red (danger) background on hover */
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <!-- Header Navigation -->
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container">
+            <div class="container-fluid">
                 <a class="navbar-brand" href="{% url 'task_list' %}">TaskMaster</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -50,21 +29,30 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'create_task' %}">Create Task</a>
                         </li>
+                        
+                        {% if user.is_superuser %} 
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'task_statistics' %}">Statistics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'admin_task_history' %}">Histories</a>
+                            </li>
+                        {% endif %}
+
                         {% if user.is_authenticated %}
                             <li class="nav-item">
                                 <span class="nav-link">Hello, {{ user.username }}!</span>
                             </li>
                             <li class="nav-item">
-                                <!-- Logout button with red hover effect -->
                                 <form method="POST" action="{% url 'logout' %}" class="d-inline">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-custom btn-logout nav-link"><i class="bi bi-box-arrow-left"></i></button>
+                                    <button type="submit" class="btn btn-custom btn-logout nav-link"><i class="bi bi-box-arrow-left"></i> Log Out</button>
                                 </form>
                             </li>
                         {% else %}
                             <li class="nav-item">
-                                <!-- Login button with blue hover effect -->
-                                <a class="btn btn-custom btn-login nav-link" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i></a>
+                                <a class="btn btn-custom btn-login nav-link" href="{% url 'signup' %}"><i class="bi bi-person-plus"></i> Sign Up</a>
+                                <a class="btn btn-custom btn-login nav-link" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Log In</a>
                             </li>
                         {% endif %}
                     </ul>
@@ -73,7 +61,6 @@
         </nav>
     </header>
 
-    <!-- Flash Messages -->
     <div class="container mt-3">
         {% if messages %}
             {% for message in messages %}
@@ -85,21 +72,16 @@
         {% endif %}
     </div>
 
-    <!-- Main Content -->
-    <main class="container mt-4">
+    <main>
         {% block content %}
         {% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-light text-center py-3 mt-4">
+    <footer>
         <p>&copy; 2025 TaskMaster. All rights reserved.</p>
     </footer>
 
-    <!-- Bootstrap JS -->
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-    
-    <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </body>
 </html>

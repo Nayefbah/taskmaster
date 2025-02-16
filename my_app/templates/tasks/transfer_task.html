@@ -8,7 +8,9 @@
         <label for="assigned_to">Select New Assignee:</label>
         <select name="assigned_to" id="assigned_to" class="form-control">
             {% for user in users %}
-                <option value="{{ user.id }}">{{ user.username }}</option>
+                {% if task.assigned_to is None or user.id != request.user.id %}
+                    <option value="{{ user.id }}">{{ user.username }}</option>
+                {% endif %}
             {% endfor %}
         </select>
     </div>

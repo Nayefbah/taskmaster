@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Task Statistics{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Task Statistics</h2>
+
+    <form method="GET" class="mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="from_date" class="form-label">From Date:</label>
+                <input type="date" name="from_date" id="from_date" class="form-control" value="{{ from_date }}">
+            </div>
+            <div class="col-md-4">
+                <label for="to_date" class="form-label">To Date:</label>
+                <input type="date" name="to_date" id="to_date" class="form-control" value="{{ to_date }}">
+            </div>
+            <div class="col-md-4 align-self-end">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="card p-3 shadow-sm mb-4">
+        <h4 class="text-center">Overall Statistics</h4>
+        <p><strong>Created Tasks:</strong> {{ created_tasks|default:0 }}</p>
+        <p><strong>Pending Tasks:</strong> {{ pending_tasks|default:0 }}</p>
+        <p><strong>In Progress Tasks:</strong> {{ in_progress_tasks|default:0 }}</p>
+        <p><strong>Completed Tasks:</strong> {{ completed_tasks|default:0 }}</p>
+        <p><strong>Total Tasks:</strong> {{ total_tasks|default:0 }}</p>  
+    </div>
+
+    <div class="card p-3 shadow-sm">
+        <h4 class="text-center">Employee Statistics</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center">Employee</th>
+                        <th class="text-center">Created</th>  
+                        <th class="text-center">Pending</th>  
+                        <th class="text-center">In Progress</th>  
+                        <th class="text-center">Completed</th>  
+                        <th class="text-center">Total Tasks</th>  
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in employee_stats %}
+                    <tr>
+                        <td>{{ employee.username }}</td>
+                        <td>{{ employee.jobs_created|default:0 }}</td>  
+                        <td>{{ employee.pending_tasks|default:0 }}</td>
+                        <td>{{ employee.in_progress_tasks|default:0 }}</td>
+                        <td>{{ employee.completed_tasks|default:0 }}</td>
+                        <td>{{ employee.total_tasks|default:0 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No data available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* ✅ Table Centering */
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
+{% endblock %}

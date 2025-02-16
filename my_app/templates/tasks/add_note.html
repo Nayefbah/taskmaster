@@ -1,34 +1,59 @@
 {% extends 'base.html' %}
 
-{% block title %}Add Note{% endblock %}
+{% block title %}Add/Edit Note{% endblock %}
 
 {% block content %}
-<h2 class="my-4 text-center">Add/Edit Note</h2>
+<h2 class="my-4 text-center">{% if last_note %}Edit{% else %}Add{% endif %} Note</h2>
+
 <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
-        <form method="POST" class="form card p-4 shadow-sm">
+        <form method="POST" enctype="multipart/form-data" class="form card p-4 shadow-sm">
             {% csrf_token %}
 
-            <!-- Title Field -->
-            <div class="mb-4">
+            <div class="mb-3">
                 <label for="id_title" class="form-label fw-semibold">Note Title</label>
-                <div class="input-group">
-                    {{ form.title }}
-                </div>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="text-danger mt-1">{{ form.title.errors }}</div>
+                {% endif %}
             </div>
 
-            <!-- Description Field -->
-            <div class="mb-4">
+            <div class="mb-3">
                 <label for="id_description" class="form-label fw-semibold">Note Description</label>
-                <div class="input-group">
-                    {{ form.description }}
-                </div>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="text-danger mt-1">{{ form.description.errors }}</div>
+                {% endif %}
             </div>
 
-            <!-- Submit and Cancel Buttons -->
+            <div class="mb-3">
+                <label for="id_file" class="form-label fw-semibold">Attachment</label>
+                {{ attachment_form.file }}
+                {% if attachment_form.file.errors %}
+                    <div class="text-danger mt-1">{{ attachment_form.file.errors }}</div>
+                {% endif %}
+                {% if last_note and last_note.attachments.exists %}
+                    <div class="mt-2">
+                        <strong>Current Attachment:</strong>
+                        {% for attachment in last_note.attachments.all %}
+                            <a href="{{ attachment.file.url }}" target="_blank" class="btn btn-outline-info btn-sm">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
             <div class="d-grid gap-3">
-                <button type="submit" class="btn btn-primary">Save Note</button>
-                <a href="{% url 'task_detail' task.id %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-success px-4">
+                    {% if last_note %}Update Note{% else %}Save Note{% endif %}
+                </button>
+
+                {% if last_note %}
+                    <a href="{% url 'delete_last_note' task.id %}" class="btn btn-danger px-4">Delete Note</a>
+                {% endif %}
+
+                <a href="{% url 'task_detail' task.id %}" class="btn btn-secondary px-4">Cancel</a>
             </div>
         </form>
     </div>

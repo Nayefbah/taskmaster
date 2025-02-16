@@ -1,11 +1,111 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ page_title }}{% endblock %}
+
 {% block content %}
-<h2>Edit Task</h2>
-<form method="POST" class="form">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-    <a href="{% url 'task_detail' task.id %}" class="btn btn-secondary">Cancel</a>
-</form>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">{{ page_title }}</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card p-4 shadow-sm">
+                <form method="POST" enctype="multipart/form-data" class="form">
+                    {% csrf_token %}
+
+                    <!-- Title -->
+                    <div class="mb-3">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="text-danger small mt-1">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3">
+                        {{ form.description.label_tag }}
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.status.label_tag }}
+                        {{ form.status }}
+                        {% if form.status.errors %}
+                            <div class="text-danger small mt-1">{{ form.status.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.due_date.label_tag }}
+                        {{ form.due_date }}
+                        {% if form.due_date.errors %}
+                            <div class="text-danger small mt-1">{{ form.due_date.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.assigned_to.label_tag }}
+                        {{ form.assigned_to }}
+                        {% if form.assigned_to.errors %}
+                            <div class="text-danger small mt-1">{{ form.assigned_to.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ attachment_form.file.label_tag }}
+                        {{ attachment_form.file }}
+                        {% if attachment_form.file.errors %}
+                            <div class="text-danger small mt-1">{{ attachment_form.file.errors }}</div>
+                        {% endif %}
+
+                        {% if form.instance.pk and form.instance.attachments.exists %}
+                            <div class="mt-2">
+                                <strong>Current Attachment:</strong>
+                                {% for attachment in form.instance.attachments.all %}
+                                    <a href="{{ attachment.file.url }}" target="_blank" class="btn btn-outline-info btn-sm">
+                                        <i class="bi bi-eye"></i> View Attachment
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <button type="submit" class="btn btn-success me-3 px-4">{{ submit_button_text }}</button>
+                        <a href="{% url 'task_list' %}" class="btn btn-secondary px-4">Cancel</a>
+
+                        {% if form.instance.pk %}
+                            {% if form.instance.assigned_to %}
+                                <p class="text-muted mt-2">This task is assigned and cannot be deleted.</p>
+                            {% else %}
+                                <a href="{% url 'delete_task' form.instance.pk %}" class="btn btn-danger px-4"
+                                   onclick="return confirm('Are you sure you want to delete this task?');">
+                                    Delete
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        flatpickr("#id_due_date", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            allowInput: true
+        });
+    });
+</script>
+
+<style>
+    input[type="file"] {
+        display: block;
+    }
+</style>
+
 {% endblock %}
