@@ -19,4 +19,5 @@ urlpatterns = [
     path('task-statistics/', views.task_statistics_view, name='task_statistics'),
     path('admin-task-history/', views.admin_history_view, name='admin_task_history'),
     path('signup/', views.signup_view, name='signup'),
+    path('manage-users/', views.manage_users_view, name='manage_users'),
 ]

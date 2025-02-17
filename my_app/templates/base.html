@@ -23,6 +23,7 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
+                        {% if user.is_authenticated and user.groups.all %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'task_list' %}">Tasks</a>
                         </li>
@@ -37,11 +38,15 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'admin_task_history' %}">Histories</a>
                             </li>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage_users' %}">Manage Users</a>
+                        </li>
                         {% endif %}
-
+                        {% endif %}
                         {% if user.is_authenticated %}
                             <li class="nav-item">
-                                <span class="nav-link">Hello, {{ user.username }}!</span>
+                                <span class="nav-link">Welcome, {{ user.username }}!</span>
                             </li>
                             <li class="nav-item">
                                 <form method="POST" action="{% url 'logout' %}" class="d-inline">

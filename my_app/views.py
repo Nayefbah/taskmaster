@@ -6,12 +6,41 @@ from django.contrib import messages
 from django.db.models import Q, Count,F
 from .models import Job, Notes, JobHistory, Attachment
 from .forms import JobForm, NoteForm, AttachmentForm
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.dateparse import parse_date
 from .models import STATUS
+from django.contrib.auth.decorators import user_passes_test
+
+def is_real_user(user):
+    return user.groups.exists() or user.is_superuser
+
+def super_required(user):
+    return user.is_superuser
 
 @login_required
+@user_passes_test(super_required)
+def manage_users_view(request):
+    if request.method=='POST':
+        user_id = request.POST.get('user_id')
+        group_id=request.POST.get('group_id')
+        try:
+            user=User.objects.get(id=user_id)
+            group=Group.objects.get(id=group_id)
+
+            user.is_active=True
+            user.groups.add(group)
+            user.save()
+            messages.success(request,f"User {user.username} has been approved and added to {group.name}.")
+        except(User.DoesNotExist, Group.DoseNotExist):
+            messages.error(request,"Invalid user or group selection")
+    new_users = User.objects.filter(is_active=False)
+    groups=Group.objects.all()
+
+    return render(request, 'registration/manage_users.html' ,{'new_users': new_users, 'groups':groups})
+
+@login_required
+@user_passes_test(is_real_user)
 def task_list_view(request):
     tasks = Job.objects.select_related('created_by', 'assigned_to').order_by('-created_at')
 
@@ -46,7 +75,6 @@ def task_list_view(request):
         if parsed_to_date:
             tasks = tasks.filter(created_at__date__lte=parsed_to_date)
 
-    # Update status to 'In Progress' when the assigned user opens the task list
     for task in tasks:
         if task.assigned_to == request.user and task.status == "Pending":
             task.status = "In Progress"
@@ -445,13 +473,15 @@ def signup_view(request):
         if form.is_valid():
             user = form.save()
 
-            # ✅ The user is created but has NO GROUP, making them inactive for now
+            user.is_active=False
+            user.save()
+
             messages.success(request, "Account created successfully! Waiting for admin approval.")
             return redirect("login")
     else:
         form = UserCreationForm()
 
-    return render(request, "tasks/signup.html", {"form": form})
+    return render(request, "registration/signup.html", {"form": form})
 
 def home_view(request):
     return render(request, 'home.html')
